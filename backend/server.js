@@ -18,7 +18,7 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET || 'dev_refresh_secret_change_
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: "https://crypto-web-fullstack.vercel.app", credentials: true }));
 
 // Rate limiters
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
