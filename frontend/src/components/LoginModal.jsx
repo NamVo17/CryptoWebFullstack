@@ -7,7 +7,7 @@ import { loginStart, loginSuccess, loginFailure } from "../store/userSlice";
 import { translations } from "../utils/translations";
 
 export default function LoginModal({ isOpen, onClose }) {
-  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:4000";
+  const API_BASE = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_BASE || "http://localhost:4000";
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.user);
   const { language } = useSelector((state) => state.settings);
