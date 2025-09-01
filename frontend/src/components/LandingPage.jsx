@@ -136,10 +136,18 @@ const LandingPage = () => {
 
   // Mock data news
   const newsData = [
-    "Thị Trường Chứng Khoán Mỹ Tiếp Tục Xu Hướng Giảm Khi Nasdaq Giảm",
-    "Chủ tịch SEC sẽ thảo luận về Dự án Crypto tại Hội thảo Blockchain Wyoming",
-    "Bitcoin Trải Qua Sự Sụt Giảm Dưới 114,000 USDT",
-    "Chỉ số Dow Jones đạt mức cao kỷ lục mới",
+    language === "vi"
+      ? "Thị Trường Chứng Khoán Mỹ Tiếp Tục Xu Hướng Giảm Khi Nasdaq Giảm"
+      : "US Stock Market Continues Downtrend as Nasdaq Falls",
+    language === "vi"
+      ? "Chủ tịch SEC sẽ thảo luận về Dự án Crypto tại Hội thảo Blockchain Wyoming"
+      : "SEC Chair to Discuss Crypto Project at Wyoming Blockchain Conference",
+    language === "vi"
+      ? "Bitcoin Trải Qua Sự Sụt Giảm Dưới 114,000 USDT"
+      : "Bitcoin Experiences Drop Below 114,000 USDT",
+    language === "vi"
+      ? "Chỉ số Dow Jones đạt mức cao kỷ lục mới"
+      : "Dow Jones Index Hits New Record High",
   ];
   return (
     <div className="bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-50 min-h-screen flex items-center justify-center p-6">
@@ -148,17 +156,17 @@ const LandingPage = () => {
         <div className="flex-1 max-w-lg">
           <h1 className="font-extrabold text-[48px] leading-[56px] mb-6">
             <span className="text-[#F5B916]">{formatNumber(count)}</span>
-            <br />NGƯỜI TIN<br />TƯỞNG CHÚNG<br />TÔI
+            <br />{t.peopleTrustMe || "NGƯỜI TIN  TƯỞNG CHÚNG TÔI"}<br /> 
           </h1>
           <form className="flex gap-3 mb-10 max-w-md">
-            <input className="flex-1 bg-white border border-[#2A2F3D] rounded-lg px-4 py-2 text-sm text-[#A1A6B0] focus:outline-none focus:ring-2 focus:ring-[#F5B916]" placeholder="Email/Số điện thoại" type="text" />
+            <input className="flex-1 bg-white border border-[#2A2F3D] rounded-lg px-4 py-2 text-sm text-[#A1A6B0] focus:outline-none focus:ring-2 focus:ring-[#F5B916]" placeholder={t.emailPhonePlaceholder || "Email/Số điện thoại"} type="text" />
             <button className="bg-[#F5B916] text-[#12161E] font-semibold rounded-lg px-5 py-2 text-sm hover:bg-yellow-200 transition" type="submit" >
-              Hãy bắt đầu
+            {t.startButton || "Hãy bắt đầu"}
             </button>
           </form>
           <div className="flex flex-col sm:flex-row sm:items-center gap-6 text-xs text-[#5A5F6E]">
             <div className="flex items-center gap-2">
-              <span>Hoặc tiếp tục với</span>
+              <span>{t.continueWith || "Hoặc tiếp tục với"}</span>
               <button aria-label="Continue with Google" className="dark:bg-[#1B1F2A] bg-gray-200 p-2 rounded-lg hover:bg-[#2A2F3D] transition" >
                 <img alt="Google logo" className="w-5 h-5" src="https://www.svgrepo.com/show/475656/google-color.svg" />
               </button>
@@ -167,7 +175,7 @@ const LandingPage = () => {
               </button>
             </div>
             <div className="flex items-center gap-2">
-              <span>Tải ứng dụng</span>
+              <span>{t.downloadApp || "Tải ứng dụng"}</span>
               <button aria-label="Download app QR code" className="dark:bg-[#1B1F2A] bg-gray-200 p-2 rounded-lg hover:bg-[#2A2F3D] transition" >
                 <QrCode className="w-5 h-5 text-black dark:text-white" />
               </button>
@@ -185,31 +193,31 @@ const LandingPage = () => {
                   className={`font-semibold ${!showNewListings ? 'text-black dark:text-white' : 'text-[#5A5F6E]'}`}
                   onClick={() => setShowNewListings(false)}
                 >
-                  Phổ biến
+                  {t.popular || "Phổ biến"}
                 </button>
                 <button 
                   className={`font-semibold ${showNewListings ? 'text-black dark:text-white' : 'text-[#5A5F6E]'}`}
                   onClick={() => setShowNewListings(true)}
                 >
-                  Niêm yết mới
+                  {t.newListings || "Niêm yết mới"}
                 </button>
               </div>
-              <a href="/market" className="hover:underline cursor-pointer">Xem tất cả 100+ coin</a>
+              <a href="/market" className="hover:underline cursor-pointer">{t.seeAllCoins || "Xem tất cả 100+ coin"}</a>
             </div>
 
             {loading && coins.length === 0 ? (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F5B916]"></div>
-                <span className="ml-2 text-sm text-[#5A5F6E]">Đang tải dữ liệu...</span>
+                <span className="ml-2 text-sm text-[#5A5F6E]">{t.loading || "Đang tải dữ liệu..."}</span>
               </div>
             ) : error ? (
               <div className="text-center py-8">
-                <p className="text-sm text-red-500 mb-2">Không thể tải dữ liệu crypto</p>
+                <p className="text-sm text-red-500 mb-2">{t.loadError || "Không thể tải dữ liệu crypto"}</p>
                 <button
                   onClick={() => dispatch(fetchCryptoData())}
                   className="text-xs text-[#F5B916] hover:underline"
                 >
-                  Thử lại
+                  {t.tryAgain || "Thử lại"}
                 </button>
               </div>
             ) : (
@@ -225,8 +233,8 @@ const LandingPage = () => {
           {/* Bottom Box - News */}
           <div className="bg-gray-200 dark:bg-gray-800 rounded-xl p-5 space-y-4">
             <div className="flex justify-between text-xs text-[#5A5F6E] mb-2">
-              <div className="font-semibold text-black dark:text-white">Tin tức</div>
-              <a href="/news" className="hover:underline cursor-pointer">Xem tất cả tin tức</a>
+              <div className="font-semibold text-black dark:text-white">{t.news || "Tin tức"}</div>
+              <a href="/news" className="hover:underline cursor-pointer">{t.seeAllNews || "Xem tất cả tin tức"}</a>
             </div>
             <ul className="text-sm space-y-3">
               {newsData.map((news, index) => (

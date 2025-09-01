@@ -237,9 +237,13 @@ const cryptoSlice = createSlice({
       })
       .addCase(fetchGlobalData.fulfilled, (state, action) => {
         state.globalLoading = false;
+        console.log("Global data fulfilled:", action.payload);
+        
         if (action.payload && action.payload.data) {
           // Update with new data structure from API
           const data = action.payload.data;
+          console.log("Processing global data:", data);
+          
           state.globalData = {
             total_market_cap: data.total_market_cap || { usd: 0 },
             total_volume: data.total_volume || { usd: 0 },
@@ -248,6 +252,8 @@ const cryptoSlice = createSlice({
             market_cap_change_percentage_24h_usd:
               data.market_cap_change_percentage_24h_usd || 0,
           };
+          
+          console.log("Updated globalData state:", state.globalData);
           state.globalLastUpdated = Date.now();
           state.globalError = null;
         }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   LineChart,
   Line,
@@ -13,6 +14,7 @@ import {
   Bar,
 } from "recharts";
 import api from "../services/api";
+import { translations } from "../utils/translations";
 
 // Hàm rút gọn số
 const formatNumber = (num) => {
@@ -30,6 +32,8 @@ function CoinChart({
   timeRange = "24H",
 }) {
   const [chartData, setChartData] = useState([]);
+  const { language } = useSelector((state) => state.settings);
+  const t = translations[language];
 
   const rangeMap = {
     "24H": 1,

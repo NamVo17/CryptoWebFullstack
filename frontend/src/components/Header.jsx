@@ -15,6 +15,7 @@ import {
   Bell,
   User,
   LogIn,
+  Globe,
 } from "lucide-react";
 import { toggleTheme, toggleLanguage } from "../store/settingsSlice";
 import { logout } from "../store/userSlice";
@@ -22,24 +23,101 @@ import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import { translations } from "../utils/translations";
 
-export default function Header() {
+export default function Header({ 
+  isLoginOpen = false,
+  onLoginOpenChange,
+  isRegisterOpen = false,
+  onRegisterOpenChange 
+}) {
   const dispatch = useDispatch();
   const location = useLocation();
   const { theme, language } = useSelector((state) => state.settings);
-  const { user, isAuthenticated } = useSelector((state) => state.user);
+  const { user, isAuthenticated, balance, accessToken } = useSelector((state) => state.user);
   const { priceAlerts } = useSelector((state) => state.crypto);
 
+  // Check if user is truly authenticated
+  const isUserAuthenticated = isAuthenticated && user && accessToken;
+
+  // Debug authentication state
+  useEffect(() => {
+    console.log('Auth state:', {
+      isAuthenticated,
+      hasUser: !!user,
+      hasToken: !!accessToken,
+      balance
+    });
+  }, [isAuthenticated, user, accessToken, balance]);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isLocalLoginOpen, setIsLocalLoginOpen] = useState(isLoginOpen);
+  const [isLocalRegisterOpen, setIsLocalRegisterOpen] = useState(isRegisterOpen);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+
+  // Sync local state with props
+  useEffect(() => {
+    setIsLocalLoginOpen(isLoginOpen);
+  }, [isLoginOpen]);
+
+  useEffect(() => {
+    setIsLocalRegisterOpen(isRegisterOpen);
+  }, [isRegisterOpen]);
+  
+  const handleLoginClick = () => {
+    if (onLoginOpenChange) {
+      onLoginOpenChange(true);
+    }
+    setIsLocalLoginOpen(true);
+  };
+
+  const handleRegisterClick = () => {
+    if (onRegisterOpenChange) {
+      onRegisterOpenChange(true);
+    }
+    setIsLocalRegisterOpen(true);
+  };
+
+  const handleLoginClose = () => {
+    if (onLoginOpenChange) {
+      onLoginOpenChange(false);
+    }
+    setIsLocalLoginOpen(false);
+  };
+
+  const handleRegisterClose = () => {
+    if (onRegisterOpenChange) {
+      onRegisterOpenChange(false);
+    }
+    setIsLocalRegisterOpen(false);
+  };
+
+  const switchToRegister = () => {
+    handleLoginClose();
+    handleRegisterClick();
+  };
+
+  const switchToLogin = () => {
+    handleRegisterClose();
+    handleLoginClick();
+  };
 
   const t = translations[language];
   const activeAlerts = priceAlerts.filter((alert) => alert.active).length;
 
-  const handleLogout = () => {
-    dispatch(logout());
-    setIsMenuOpen(false);
+  const handleLogout = async () => {
+    try {
+      // Call logout endpoint
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_BASE || "http://localhost:4000";
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Always dispatch logout action to clear local state
+      dispatch(logout());
+      setIsMenuOpen(false);
+    }
   };
 
   // Close language menu when clicking outside
@@ -53,6 +131,29 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isLanguageMenuOpen]);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && !event.target.closest('.user-menu')) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape' && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isMenuOpen]);
 
   return (
     <>
@@ -122,9 +223,10 @@ export default function Header() {
               <div className="relative language-toggle">
                 <button 
                   onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-300 transition-colors cursor-pointer"
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-white  text-gray-700 dark:text-gray-300 dark:bg-dark-100
+                   transition-colors cursor-pointer hover:text-blue-500 dark:hover:text-blue-500 "
                 >
-                  <span className="text-lg">🇻🇳</span>
+                  <Globe className="w-5 h-5 " />
                 </button>
                 
                 {/* Language Dropdown */}
@@ -157,7 +259,8 @@ export default function Header() {
               {/* Theme Toggle */}
               <button
                 onClick={() => dispatch(toggleTheme())}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-300 transition-colors cursor-pointer"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-dark-100 text-gray-700 dark:text-gray-300 
+                hover:text-blue-500 dark:hover:text-blue-500 transition-colors cursor-pointer"
                 title={theme === "light" ? t.darkMode : t.lightMode}
               >
                 {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
@@ -166,23 +269,47 @@ export default function Header() {
               {/* User Actions */}
               <div className="flex space-x-2">
                 {isAuthenticated ? (
-                  <div className="relative">
+                  <div className="relative user-menu">
                     <button
                       onClick={() => setIsMenuOpen(!isMenuOpen)}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-crypto-blue cursor-pointer whitespace-nowrap"
+                      className="bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-300 rounded-lg px-4 py-2 text-sm font-medium  \
+                      dark:hover:text-crypto-blue hover:text-crypto-blue cursor-pointer whitespace-nowrap"
                     >
                       {user?.name}
                     </button>
                     {isMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-100 rounded-xl shadow-lg border border-gray-200 dark:border-dark-300 py-2">
+                      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-dark-100 rounded-xl shadow-lg border border-gray-200 dark:border-dark-300 py-2">
+                        {/* User Info */}
+                        <div className="px-4 py-2 border-b border-gray-200 dark:border-dark-300">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {user?.name}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {user?.email}
+                          </div>
+                        </div>
+                        
+                        {/* Balance Info */}
+                        <div className="px-4 py-2 border-b border-gray-200 dark:border-dark-300">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {t.availableBalance || "Số dư khả dụng"}
+                          </div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                            ${(user?.balance?.usdt || balance?.usdt || 0).toLocaleString()} USDT
+                          </div>
+                        </div>
+                        
+                        {/* Menu Items */}
                         <a
                           href="#"
+                          onClick={() => setIsMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-200"
                         >
                           {t.profile}
                         </a>
                         <a
                           href="#"
+                          onClick={() => setIsMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-200"
                         >
                           {t.settings}
@@ -201,13 +328,13 @@ export default function Header() {
                   <>
                     <button
                       aria-label="open-login"
-                      onClick={() => setIsLoginModalOpen(true)}
+                      onClick={handleLoginClick}
                       className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-crypto-blue hover:bg-gray-100 dark:hover:bg-dark-200 rounded-xl transition-all duration-200 cursor-pointer whitespace-nowrap"
                     >
                       {t.login}
                     </button>
                     <button
-                      onClick={() => setIsRegisterModalOpen(true)}
+                      onClick={handleRegisterClick}
                       className="px-4 py-2 bg-crypto-blue hover:bg-crypto-blue/90 text-white text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer whitespace-nowrap shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                     >
                       {t.register}
@@ -232,7 +359,7 @@ export default function Header() {
               </button>
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 cursor-pointer user-menu"
               >
                 <Menu size={20} />
               </button>
@@ -278,12 +405,14 @@ export default function Header() {
       </header>
 
       <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
+        isOpen={isLocalLoginOpen}
+        onClose={handleLoginClose}
+        onSwitchToRegister={switchToRegister}
       />
       <RegisterModal
-        isOpen={isRegisterModalOpen}
-        onClose={() => setIsRegisterModalOpen(false)}
+        isOpen={isLocalRegisterOpen}
+        onClose={handleRegisterClose}
+        onSwitchToLogin={switchToLogin}
       />
     </>
   );

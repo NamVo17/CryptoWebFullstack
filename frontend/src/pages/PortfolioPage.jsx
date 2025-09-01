@@ -7,23 +7,62 @@ import { TrendingUp, TrendingDown, DollarSign, PieChart, BarChart3, Wallet } fro
 
 const PortfolioPage = () => {
   const { language } = useSelector((state) => state.settings);
-  const { cryptoData } = useSelector((state) => state.crypto);
+  const { portfolio } = useSelector((state) => state.user);
+  const { coins } = useSelector((state) => state.crypto);
   const t = translations[language];
 
-  // Mock portfolio data - in real app this would come from user's portfolio
-  const [portfolio] = useState([
-    { id: 1, symbol: "BTC", name: "Bitcoin", amount: 0.5, avgPrice: 45000, currentPrice: 52000, value: 26000, change24h: 15.6, allocation: 45.2 },
-    { id: 2, symbol: "ETH", name: "Ethereum", amount: 3.2, avgPrice: 3200, currentPrice: 3800, value: 12160, change24h: 18.8, allocation: 21.1 },
-    { id: 3, symbol: "ADA", name: "Cardano", amount: 5000, avgPrice: 1.2, currentPrice: 1.8, value: 9000, change24h: 50.0, allocation: 15.6 },
-    { id: 4, symbol: "SOL", name: "Solana", amount: 25, avgPrice: 120, currentPrice: 180, value: 4500, change24h: 50.0, allocation: 7.8 },
-    { id: 5, symbol: "DOT", name: "Polkadot", amount: 100, avgPrice: 25, currentPrice: 28, value: 2800, change24h: 12.0, allocation: 4.9 },
-    { id: 6, symbol: "LINK", name: "Chainlink", amount: 200, avgPrice: 18, currentPrice: 22, value: 4400, change24h: 22.2, allocation: 5.6 },
-  ]);
+  // Process portfolio data to aggregate by coin and calculate values
+  const aggregatedPortfolio = portfolio.reduce((acc, order) => {
+    const coinId = order.coinId;
+    
+    if (!acc[coinId]) {
+      acc[coinId] = {
+        id: coinId,
+        symbol: order.coinSymbol,
+        name: order.coinName,
+        totalQuantity: 0,
+        totalCost: 0,
+        orders: []
+      };
+    }
+    
+    acc[coinId].totalQuantity += order.quantity;
+    acc[coinId].totalCost += (order.quantity > 0 ? order.quantity * order.price : 0);
+    acc[coinId].orders.push(order);
+    
+    return acc;
+  }, {});
 
-  const totalValue = portfolio.reduce((sum, asset) => sum + asset.value, 0);
-  const totalCost = portfolio.reduce((sum, asset) => sum + (asset.amount * asset.avgPrice), 0);
+  // Convert to array and calculate final values
+  const processedPortfolio = Object.values(aggregatedPortfolio)
+    .filter(coin => coin.totalQuantity > 0) // Only show coins with positive balance
+    .map(coin => {
+      // Find current coin data for price updates
+      const coinData = coins.find(c => c.id === coin.id);
+      const currentPrice = coinData?.current_price || coin.totalCost / coin.totalQuantity;
+      const avgPrice = coin.totalCost / coin.totalQuantity;
+      
+      return {
+        ...coin,
+        amount: coin.totalQuantity,
+        avgPrice: avgPrice,
+        currentPrice: currentPrice,
+        value: currentPrice * coin.totalQuantity,
+        change24h: coinData?.price_change_percentage_24h || 0,
+        allocation: 0, // Will be calculated after we have total value
+      };
+    });
+
+  const totalValue = processedPortfolio.reduce((sum, asset) => sum + asset.value, 0);
+  const totalCost = processedPortfolio.reduce((sum, asset) => sum + (asset.amount * asset.avgPrice), 0);
   const totalProfit = totalValue - totalCost;
-  const totalProfitPercentage = ((totalProfit / totalCost) * 100);
+  const totalProfitPercentage = totalCost > 0 ? ((totalProfit / totalCost) * 100) : 0;
+
+  // Calculate allocation percentages
+  const portfolioWithAllocation = processedPortfolio.map(asset => ({
+    ...asset,
+    allocation: totalValue > 0 ? (asset.value / totalValue) * 100 : 0
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -109,7 +148,7 @@ const PortfolioPage = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {portfolio.map((asset) => (
+                {portfolioWithAllocation.length > 0 ? portfolioWithAllocation.map((asset) => (
                   <tr key={asset.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -131,7 +170,13 @@ const PortfolioPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{asset.allocation.toFixed(1)}%</td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                      {t.noPortfolioData || "Chưa có giao dịch nào trong danh mục"}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

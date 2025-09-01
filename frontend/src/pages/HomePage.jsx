@@ -41,14 +41,14 @@ const HomePage = () => {
                   href="/market"
                 >
                   <i className="ri-line-chart-line mr-2"></i>
-                  Khám phá thị trường
+                  {t.exploreMarket || "Khám phá thị trường"}
                 </a>
                 <a
                   className="px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-semibold rounded-xl transition-all duration-200 cursor-pointer whitespace-nowrap"
                   href="/portfolio"
                 >
                   <i className="ri-briefcase-line mr-2"></i>
-                  Tạo danh mục
+                  {t.createPortfolio || "Tạo danh mục"}
                 </a>
               </div>
             </div>
@@ -62,7 +62,7 @@ const HomePage = () => {
         <section className="py-12 bg-gray-100 dark:bg-gray-900 rounded-lg">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-              Các câu hỏi thường gặp
+              {t.frequentlyAskedQuestions || "Các câu hỏi thường gặp"}
             </h2>
             <FAQSection />
           </div>
@@ -80,11 +80,11 @@ const HomePage = () => {
                 playsInline
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6 bg-black/40">
-                <h2 className="text-4xl font-bold mb-4">Bắt đầu tăng thu nhập ngay hôm nay</h2>
+                <h2 className="text-4xl font-bold mb-4">{t.startEarningToday || "Bắt đầu tăng thu nhập ngay hôm nay"}</h2>
                 <button
                   className="mt-4 bg-[#F5B916] text-[#12161E] font-semibold rounded-lg px-5 py-3 text-sm hover:bg-yellow-200 transition"
                 >
-                  Đăng ký ngay
+                  {t.registerNow || "Đăng ký ngay"}
                 </button>
               </div>
             </div>

@@ -1,91 +1,95 @@
 "use client"
 import React, { useState } from "react"
+import { useSelector } from "react-redux"
+import { translations } from "../utils/translations"
 
 const FAQSection = () => {
     const [openIndex, setOpenIndex] = useState(null)
+    const { language } = useSelector((state) => state.settings)
+    const t = translations[language]
 
     const faqs = [
         {
             id: 1,
-            question: "Sàn giao dịch tiền mã hóa là gì?",
+            question: t.faq1Question || "Sàn giao dịch tiền mã hóa là gì?",
             answer: (
                 <>
-                    Sàn giao dịch <a href="/crypto" className="text-yellow-400 hover:underline">tiền mã hóa</a> là thị trường kỹ thuật số cho phép người dùng mua và bán các loại tiền mã hóa như{" "}
+                    {t.faq1Answer1 || "Sàn giao dịch"} <a href="/crypto" className="text-yellow-400 hover:underline">{t.faq1Answer2 || "tiền mã hóa"}</a> {t.faq1Answer3 || "là thị trường kỹ thuật số cho phép người dùng mua và bán các loại tiền mã hóa như"}{" "}
                     <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">Bitcoin</a>,{" "}
-                    <a href="https://ethereum.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">Ethereum</a> và{" "}
+                    <a href="https://ethereum.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">Ethereum</a> {t.faq1Answer4 || "và"}{" "}
                     <a href="https://tether.to" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">Tether</a>.
-                    Sàn giao dịch Binance là sàn giao dịch tiền mã hóa lớn nhất tính theo khối lượng giao dịch.
+                    {t.faq1Answer5 || "Sàn giao dịch CryptoHub là sàn giao dịch tiền mã hóa lớn nhất tính theo khối lượng giao dịch."}
                 </>
             ),
         },
         {
             id: 2,
-            question: "Binance cung cấp những sản phẩm gì?",
+            question: t.faq2Question || "CryptoHub cung cấp những sản phẩm gì?",
             answer: (
                 <>
-                    Binance là sàn giao dịch tiền mã hóa hàng đầu thế giới, cung cấp dịch vụ cho 235 triệu người dùng đã đăng ký tại hơn 180 quốc gia. Với mức phí thấp và hơn 350 loại tiền mã hóa để giao dịch, Binance là sàn giao dịch ưa thích để giao dịch Bitcoin, Altcoin và các tài sản ảo khác.
+                    {t.faq2Answer1 || "CryptoHub là sàn giao dịch tiền mã hóa hàng đầu thế giới, cung cấp dịch vụ cho 235 triệu người dùng đã đăng ký tại hơn 180 quốc gia. Với mức phí thấp và hơn 350 loại tiền mã hóa để giao dịch, CryptoHub là sàn giao dịch ưa thích để giao dịch Bitcoin, Altcoin và các tài sản ảo khác."}
                     <br /><br />
-                    Với Binance, người dùng có thể:
+                    {t.faq2Answer2 || "Với CryptoHub, người dùng có thể:"}
                     <ul className="list-disc list-inside mt-2">
-                        <li>Giao dịch hàng trăm loại tiền mã hóa trên thị trường Spot, Margin và Futures.</li>
-                        <li>Mua và bán tiền mã hóa với Binance P2P. The data presented is for informational purposes only.</li>
-                        <li>Kiếm tiền lãi từ tiền mã hóa của bạn với Binance Earn.</li>
-                        <li>Mua hoặc kiếm token mới trên Binance Launchpad.</li>
-                        <li>Giao dịch, staking và cho vay NFT trên thị trường Binance NFT.</li>
+                        <li>{t.faq2Answer3 || "Giao dịch hàng trăm loại tiền mã hóa trên thị trường Spot, Margin và Futures."}</li>
+                        <li>{t.faq2Answer4 || "Mua và bán tiền mã hóa với CryptoHub P2P."}</li>
+                        <li>{t.faq2Answer5 || "Kiếm tiền lãi từ tiền mã hóa của bạn với CryptoHub Earn."}</li>
+                        <li>{t.faq2Answer6 || "Mua hoặc kiếm token mới trên CryptoHub Launchpad."}</li>
+                        <li>{t.faq2Answer7 || "Giao dịch, staking và cho vay NFT trên thị trường CryptoHub NFT."}</li>
                     </ul>
                 </>
             ),
         },
         {
             id: 3,
-            question: "Cách mua Bitcoin và các loại tiền mã hóa khác trên Binance",
+            question: t.faq3Question || "Cách mua CryptoHub và các loại tiền mã hóa khác trên CryptoHub",
             answer: (
                 <>
-                    Có rất nhiều cách để {" "}<a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">mua tiền mã hóa</a>{" "} trên Binance.
-                    Bạn có thể sử dụng thẻ tín dụng/thẻ ghi nợ, số dư tiền mặt hoặc Apple Pay/Google Pay để mua tiền mã hóa trên Binance.
-                    Trước khi bắt đầu, vui lòng đảm bảo rằng bạn đã hoàn tất {" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Xác minh danh tính</a>{" "} cho tài khoản Binance của mình.
+                    {t.faq3Answer1 || "Có rất nhiều cách để"}{" "}<a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq3Answer2 || "mua tiền mã hóa"}</a>{" "} {t.faq3Answer3 || "trên CryptoHub."}
+                    {t.faq3Answer4 || "Bạn có thể sử dụng thẻ tín dụng/thẻ ghi nợ, số dư tiền mặt hoặc Apple Pay/Google Pay để mua tiền mã hóa trên CryptoHub."}
+                    {t.faq3Answer5 || "Trước khi bắt đầu, vui lòng đảm bảo rằng bạn đã hoàn tất"}{" "}
+                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq3Answer6 || "Xác minh danh tính"}</a>{" "} {t.faq3Answer7 || "cho tài khoản CryptoHub của mình."}
                 </>
             ),
         },
         {
             id: 4,
-            question: "Cách theo dõi giá tiền mã hóa",
+            question: t.faq4Question || "Cách theo dõi giá tiền mã hóa",
             answer: (
                 <>
-                    Cách dễ dàng nhất để theo dõi giá tiền mã hóa mới nhất, khối lượng giao dịch, xu hướng của altcoin và vốn hóa thị trường là {" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Danh mục tiền mã hóa Binance</a>.{" "}
-                    Nhấp vào các coin để biết giá lịch sử, khối lượng giao dịch trong 24 giờ và giá của các loại tiền mã hóa như {" "}
+                    {t.faq4Answer1 || "Cách dễ dàng nhất để theo dõi giá tiền mã hóa mới nhất, khối lượng giao dịch, xu hướng của altcoin và vốn hóa thị trường là"}{" "}
+                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq4Answer2 || "Danh mục tiền mã hóa CryptoHub"}</a>.{" "}
+                    {t.faq4Answer3 || "Nhấp vào các coin để biết giá lịch sử, khối lượng giao dịch trong 24 giờ và giá của các loại tiền mã hóa như"}{" "}
                     <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Bitcoin</a>,{" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Ethereum</a>,{" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">BNB</a>{" "} và các loại tiền mã hóa khác trong thời gian thực.                
+                    <a href="https://ethereum.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Ethereum</a>,{" "}
+                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">BNB</a>{" "} {t.faq4Answer4 || "và các loại tiền mã hóa khác trong thời gian thực."}                
                 </>
             ),
         },
         {
             id: 5,
-            question: "Cách giao dịch tiền mã hóa trên Binance",
+            question: t.faq5Question || "Cách giao dịch tiền mã hóa trên CryptoHub",
             answer: (
                 <>
-                    Bạn có thể giao dịch hàng trăm loại tiền mã hóa trên Binance thông qua thị trường {" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Spot</a>,{" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Margin</a>,{" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Futures</a>{" "} và {" "}
-                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Options</a>.
-                    Để {" "} <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">bắt đầu giao dịch</a>, {" "}
-                    người dùng cần đăng ký tài khoản, hoàn tất xác minh danh tính, mua/nạp tiền mã hóa và bắt đầu giao dịch.
+                    {t.faq5Answer1 || "Bạn có thể giao dịch hàng trăm loại tiền mã hóa trên CryptoHub thông qua thị trường"}{" "}
+                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq5Answer2 || "Spot"}</a>,{" "}
+                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq5Answer3 || "Margin"}</a>,{" "}
+                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq5Answer4 || "Futures"}</a>{" "} {t.faq5Answer5 || "và"}{" "}
+                    <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq5Answer6 || "Options"}</a>.
+                    {t.faq5Answer7 || "Để"}{" "} <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">{t.faq5Answer8 || "bắt đầu giao dịch"}</a>, {" "}
+                    {t.faq5Answer9 || "người dùng cần đăng ký tài khoản, hoàn tất xác minh danh tính, mua/nạp tiền mã hóa và bắt đầu giao dịch."}
                 </>
             ),
         },
         {
             id: 6,
-            question: "Cách sinh lời từ tiền mã hóa trên Binance",
+            question: t.faq6Question || "Cách sinh lời từ tiền mã hóa trên CryptoHub",
             answer: (
                 <>
-                    Người dùng có thể kiếm phần thưởng từ hơn 180 loại tiền mã hóa bằng cách sử dụng một trong những sản phẩm được cung cấp trên Binance Earn.
-                    Nền tảng của chúng tôi cung cấp nhiều tài sản kỹ thuật số như {" "}
+                    {t.faq6Answer1 || "Người dùng có thể kiếm phần thưởng từ hơn 180 loại tiền mã hóa bằng cách sử dụng một trong những sản phẩm được cung cấp trên CryptoHub Earn."}
+                    {t.faq6Answer2 || "Nền tảng của chúng tôi cung cấp nhiều tài sản kỹ thuật số như"}{" "}
                     <a href="https://bitcoin.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Bitcoin</a>,{" "}
-                    <a href="https://ethereum.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Ethereum</a> và các stablecoin.
+                    <a href="https://ethereum.org" target="_blank" rel="noopener noreferrer" className="text-yellow-400 ">Ethereum</a> {t.faq6Answer3 || "và các stablecoin."}
                 </>
             ),
         },
