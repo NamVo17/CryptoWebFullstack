@@ -84,16 +84,12 @@ const validatePassword = (password) => {
 // Auth routes
 app.post("/auth/register", strictLimiter, async (req, res) => {
   try {
-    console.log("🔍 Backend: Registration request received:", req.body);
 
     const { email, password, name } = req.body || {};
 
-    // Debug logging
-    console.log("🔍 Registration attempt:", { email, name });
 
     // Validation
     if (!email || !password || !name) {
-      console.log("❌ Missing required fields");
       return res.status(400).json({
         success: false,
         message: "Vui lòng điền đầy đủ thông tin",
@@ -103,7 +99,6 @@ app.post("/auth/register", strictLimiter, async (req, res) => {
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      console.log("❌ Invalid email format");
       return res.status(400).json({
         success: false,
         message: "Email không hợp lệ",
@@ -136,12 +131,10 @@ app.post("/auth/register", strictLimiter, async (req, res) => {
       eth: 0
     };
 
-    console.log("💰 Using balance from registration:", balance);
 
     // Create user object with balance
     // Create user object with balance
     const newUser = { id, email, name, passwordHash, balance };
-    console.log('🔍 Created new user object:', newUser); // Log để debug
     
     users.set(email, newUser);
 
@@ -157,18 +150,11 @@ app.post("/auth/register", strictLimiter, async (req, res) => {
       }
     };
     
-    console.log('📤 Prepared user response:', userResponse); // Log để debug
 
     const { accessToken, refreshToken } = issueTokens(newUser);
     setRefreshCookie(res, refreshToken);
 
-    // Double check balance is included
-    console.log('🔍 Checking final user response:', {
-      id: userResponse.id,
-      email: userResponse.email,
-      name: userResponse.name,
-      balance: userResponse.balance
-    });
+    
 
     const response = {
       success: true,
@@ -186,18 +172,7 @@ app.post("/auth/register", strictLimiter, async (req, res) => {
       accessToken
     };
 
-    // Final check and log before sending
-    console.log('Final response data:', {
-      success: response.success,
-      user: {
-        id: response.user.id,
-        email: response.user.email,
-        name: response.user.name,
-        balance: response.user.balance
-      },
-      hasAccessToken: !!response.accessToken
-    });
-
+    
     return res.status(201).json(response);
   } catch (err) {
     console.error("Registration error:", err);
@@ -210,7 +185,7 @@ app.post("/auth/register", strictLimiter, async (req, res) => {
 
 app.post("/auth/login", authLimiter, async (req, res) => {
   try {
-    console.log("🔍 Login attempt received:", req.body);
+   
 
     const { email, password } = req.body || {};
 
@@ -241,19 +216,13 @@ app.post("/auth/login", authLimiter, async (req, res) => {
     if (!user.balance) {
       user.balance = initializeUserBalance();
       users.set(email, user);
-      console.log("ℹ️ Added missing balance for user:", {
-        email,
-        balance: user.balance,
-      });
+
     }
     // Ensure user has a balance (for users created before this change)
     if (!user.balance) {
       user.balance = initializeUserBalance();
       users.set(email, user); // persist updated user in memory
-      console.log("ℹ️ Backfill balance for existing user:", {
-        email,
-        balance: user.balance,
-      });
+
     }
 
     const { accessToken, refreshToken } = issueTokens(user);
@@ -270,13 +239,7 @@ app.post("/auth/login", authLimiter, async (req, res) => {
       }
     };
     
-    console.log('Login response prepared:', userResponse);
 
-    console.log("🔍 Backend: Login - User found:", user);
-    console.log(
-      "🔍 Backend: Login - Sending response with balance:",
-      userResponse.balance
-    );
 
     // Prepare and log complete response
     const response = {
@@ -286,10 +249,7 @@ app.post("/auth/login", authLimiter, async (req, res) => {
       accessToken,
     };
 
-    console.log("📤 Sending login response with balance:", {
-      email: response.user.email,
-      balance: response.user.balance,
-    });
+
 
     return res.json(response);
   } catch (err) {
@@ -321,18 +281,12 @@ app.post("/auth/refresh", authLimiter, (req, res) => {
       user.balance = initializeUserBalance();
       // update map (keyed by email)
       users.set(user.email, user);
-      console.log("ℹ️ Backfill balance during refresh for user:", {
-        id: user.id,
-        email: user.email,
-      });
+
     }
 
     const { accessToken, refreshToken } = issueTokens(user);
     setRefreshCookie(res, refreshToken);
-    console.log(
-      "📤 Sending final login response:",
-      JSON.stringify(response, null, 2)
-    );
+
     return res.json({
       accessToken,
       user: {
@@ -460,6 +414,4 @@ app.use("/api", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🔍 Debug mode: Balance initialization enabled`);
 });
