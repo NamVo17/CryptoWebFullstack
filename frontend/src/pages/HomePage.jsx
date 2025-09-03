@@ -1,10 +1,10 @@
 import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
 import { useSelector } from "react-redux";
-import { translations } from "../utils/translations";
-import LandingPage from "../components/LandingPage";
-import FAQSection from "../components/FAQSection";
+import { translations } from "../utils/formatters/translations";
+import LandingPage from "../components/features/crypto/LandingPage";
+import FAQSection from "../components/shared/FAQSection";
 
 const HomePage = () => {
   
