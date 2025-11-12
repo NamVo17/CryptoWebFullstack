@@ -21,13 +21,14 @@ import { toggleTheme, toggleLanguage } from "../../store/slices/settingsSlice";
 import { logout } from "../../store/slices/userSlice";
 import LoginModal from "../features/auth/LoginModal";
 import RegisterModal from "../features/auth/RegisterModal";
+import VerticalNav from "./VerticalNav";
 import { translations } from "../../utils/formatters/translations";
 
-export default function Header({ 
+export default function Header({
   isLoginOpen = false,
   onLoginOpenChange,
   isRegisterOpen = false,
-  onRegisterOpenChange 
+  onRegisterOpenChange
 }) {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -49,44 +50,47 @@ export default function Header({
   }, [isAuthenticated, user, accessToken, balance]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLocalLoginOpen, setIsLocalLoginOpen] = useState(isLoginOpen);
-  const [isLocalRegisterOpen, setIsLocalRegisterOpen] = useState(isRegisterOpen);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
 
-  // Sync local state with props
-  useEffect(() => {
-    setIsLocalLoginOpen(isLoginOpen);
-  }, [isLoginOpen]);
+  // Use props or local state for login/register modals
+  const [localLoginOpen, setLocalLoginOpen] = useState(isLoginOpen);
+  const [localRegisterOpen, setLocalRegisterOpen] = useState(isRegisterOpen);
 
-  useEffect(() => {
-    setIsLocalRegisterOpen(isRegisterOpen);
-  }, [isRegisterOpen]);
-  
-  const handleLoginClick = () => {
+  // Determine which state to use - props if available, otherwise local
+  const isLocalLoginOpen = onLoginOpenChange ? isLoginOpen : localLoginOpen;
+  const isLocalRegisterOpen = onRegisterOpenChange ? isRegisterOpen : localRegisterOpen;
+
+  // Helper function to set login state
+  const setIsLocalLoginOpen = (value) => {
     if (onLoginOpenChange) {
-      onLoginOpenChange(true);
+      onLoginOpenChange(value);
+    } else {
+      setLocalLoginOpen(value);
     }
+  };
+
+  // Helper function to set register state
+  const setIsLocalRegisterOpen = (value) => {
+    if (onRegisterOpenChange) {
+      onRegisterOpenChange(value);
+    } else {
+      setLocalRegisterOpen(value);
+    }
+  };
+
+  const handleLoginClick = () => {
     setIsLocalLoginOpen(true);
   };
 
   const handleRegisterClick = () => {
-    if (onRegisterOpenChange) {
-      onRegisterOpenChange(true);
-    }
     setIsLocalRegisterOpen(true);
   };
 
   const handleLoginClose = () => {
-    if (onLoginOpenChange) {
-      onLoginOpenChange(false);
-    }
     setIsLocalLoginOpen(false);
   };
 
   const handleRegisterClose = () => {
-    if (onRegisterOpenChange) {
-      onRegisterOpenChange(false);
-    }
     setIsLocalRegisterOpen(false);
   };
 
@@ -135,7 +139,8 @@ export default function Header({
   // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isMenuOpen && !event.target.closest('.user-menu')) {
+      // Don't close menu if clicking on menu button or inside menu area or vertical nav
+      if (isMenuOpen && !event.target.closest('.user-menu') && !event.target.closest('a') && !event.target.closest('.mobile-user-actions') && !event.target.closest('nav')) {
         setIsMenuOpen(false);
       }
     };
@@ -148,7 +153,7 @@ export default function Header({
 
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscapeKey);
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscapeKey);
@@ -161,78 +166,78 @@ export default function Header({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center">
+            <div className="flex items-center mr-2">
               <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-crypto-blue to-crypto-purple rounded-xl flex items-center justify-center">
-                  <TrendingUp size={20} className="text-white" />
+                <div className="w-14 h-14 bg-gradient-to-r  rounded-xl flex items-center justify-center overflow-hidden">
+                  <img
+                    src="/iconweb.png"
+                    alt="Web Icon"
+                    className="w-14 h-14 object-contain"
+                  />
                 </div>
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  CryptoHub
+                <span className="font-playfair text-2xl font-bold text-gray-900 dark:text-white">
+                  VIETNAMCoin
                 </span>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className=" hidden md:flex items-center space-x-2">
               <Link
                 to="/"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                  location.pathname === "/"
-                    ? "text-crypto-blue bg-crypto-blue/10"
-                    : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                }`}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${location.pathname === "/"
+                  ? "text-crypto-blue bg-crypto-blue/10"
+                  : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
+                  }`}
               >
                 <Home size={16} />
                 <span>{t.home}</span>
               </Link>
               <Link
                 to="/market"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                  location.pathname === "/market"
-                    ? "text-crypto-blue bg-crypto-blue/10"
-                    : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                }`}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${location.pathname === "/market"
+                  ? "text-crypto-blue bg-crypto-blue/10"
+                  : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
+                  }`}
               >
                 <TrendingUp size={16} />
                 <span>{t.markets}</span>
               </Link>
               <Link
                 to="/portfolio"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                  location.pathname === "/portfolio"
-                    ? "text-crypto-blue bg-crypto-blue/10"
-                    : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                }`}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${location.pathname === "/portfolio"
+                  ? "text-crypto-blue bg-crypto-blue/10"
+                  : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
+                  }`}
               >
                 <Briefcase size={16} />
                 <span>{t.portfolio}</span>
               </Link>
               <Link
                 to="/news"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                  location.pathname === "/news"
-                    ? "text-crypto-blue bg-crypto-blue/10"
-                    : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                }`}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${location.pathname === "/news"
+                  ? "text-crypto-blue bg-crypto-blue/10"
+                  : "text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
+                  }`}
               >
                 <Newspaper size={16} />
                 <span>{t.news}</span>
               </Link>
 
               {/* Language Toggle */}
-              <div className="relative language-toggle">
-                <button 
+              <div className=" hidden lg:block relative language-toggle">
+                <button
                   onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
                   className="w-10 h-10 flex items-center justify-center rounded-xl bg-white  text-gray-700 dark:text-gray-300 dark:bg-dark-100
                    transition-colors cursor-pointer hover:text-blue-500 dark:hover:text-blue-500 "
                 >
                   <Globe className="w-5 h-5 " />
                 </button>
-                
+
                 {/* Language Dropdown */}
                 {isLanguageMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-100 rounded-xl shadow-lg border border-gray-200 dark:border-dark-300 py-2 z-50">
-                    <div 
+                    <div
                       onClick={() => {
                         dispatch(toggleLanguage('vi'));
                         setIsLanguageMenuOpen(false);
@@ -242,7 +247,7 @@ export default function Header({
                       <span>🇻🇳 Tiếng Việt</span>
                       {language === 'vi' && <span className="text-crypto-blue">✓</span>}
                     </div>
-                    <div 
+                    <div
                       onClick={() => {
                         dispatch(toggleLanguage('en'));
                         setIsLanguageMenuOpen(false);
@@ -259,7 +264,7 @@ export default function Header({
               {/* Theme Toggle */}
               <button
                 onClick={() => dispatch(toggleTheme())}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-dark-100 text-gray-700 dark:text-gray-300 
+                className="hidden lg:flex w-10 h-10  items-center justify-center rounded-xl bg-white dark:bg-dark-100 text-gray-700 dark:text-gray-300 
                 hover:text-blue-500 dark:hover:text-blue-500 transition-colors cursor-pointer"
                 title={theme === "light" ? t.darkMode : t.lightMode}
               >
@@ -267,7 +272,7 @@ export default function Header({
               </button>
 
               {/* User Actions */}
-              <div className="flex space-x-2">
+              <div className="  space-x-1 hidden lg:flex">
                 {isAuthenticated ? (
                   <div className="relative user-menu">
                     <button
@@ -288,7 +293,7 @@ export default function Header({
                             {user?.email}
                           </div>
                         </div>
-                        
+
                         {/* Balance Info */}
                         <div className="px-4 py-2 border-b border-gray-200 dark:border-dark-300">
                           <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -298,7 +303,7 @@ export default function Header({
                             ${(user?.balance?.usdt || balance?.usdt || 0).toLocaleString()} USDT
                           </div>
                         </div>
-                        
+
                         {/* Menu Items */}
                         <a
                           href="#"
@@ -329,7 +334,7 @@ export default function Header({
                     <button
                       aria-label="open-login"
                       onClick={handleLoginClick}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-crypto-blue hover:bg-gray-100 dark:hover:bg-dark-200 rounded-xl transition-all duration-200 cursor-pointer whitespace-nowrap"
+                      className=" px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-crypto-blue hover:bg-gray-100 dark:hover:bg-dark-200 rounded-xl transition-all duration-200 cursor-pointer whitespace-nowrap"
                     >
                       {t.login}
                     </button>
@@ -345,65 +350,28 @@ export default function Header({
             </div>
 
             {/* Mobile Menu */}
-            <div className="md:hidden flex items-center space-x-2">
-              <div className="relative">
-                <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-300 transition-colors cursor-pointer">
-                  <span className="text-lg">🇻🇳</span>
-                </button>
-              </div>
-              <button
-                onClick={() => dispatch(toggleTheme())}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-300 transition-colors cursor-pointer"
-              >
-                {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
-              </button>
+            <div className="lg:hidden flex items-center space-x-2">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-dark-200 text-gray-700 dark:text-gray-300 cursor-pointer user-menu"
               >
-                <Menu size={20} />
+                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
           </div>
-
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-200 dark:border-dark-300">
-              <nav className="flex flex-col space-y-2">
-                <Link
-                  to="/"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="py-2 text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                >
-                  {t.home}
-                </Link>
-                <Link
-                  to="/market"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="py-2 text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                >
-                  {t.markets}
-                </Link>
-                <Link
-                  to="/portfolio"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="py-2 text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                >
-                  {t.portfolio}
-                </Link>
-                <Link
-                  to="/news"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="py-2 text-gray-700 dark:text-gray-300 hover:text-crypto-blue dark:hover:text-crypto-blue"
-                >
-                  {t.news}
-                </Link>
-              </nav>
-            </div>
-          )}
         </div>
       </header>
-
+       {/* Vertical Navigation Sidebar */}
+      <VerticalNav
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        onLoginClick={handleLoginClick}
+        onRegisterClick={handleRegisterClick}
+        onLogout={handleLogout}
+        isAuthenticated={isUserAuthenticated}
+        user={user}
+        balance={balance}
+      />   
       <LoginModal
         isOpen={isLocalLoginOpen}
         onClose={handleLoginClose}

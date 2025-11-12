@@ -1,6 +1,7 @@
 // Layout exports
 export * from './layout/Header';
 export * from './layout/Footer';
+export * from './layout/VerticalNav';
 
 // Feature components exports
 export * from './features/auth/LoginModal';

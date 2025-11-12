@@ -207,7 +207,6 @@ export const translations = {
     faq6Answer3: "và các stablecoin.",
 
     // NewsPage
-    news: "Tin tức Crypto",
     newsDescription: "Cập nhật tin tức mới nhất về thị trường cryptocurrency, blockchain và DeFi",
     searchNews: "Tìm kiếm tin tức...",
     category: "Danh mục",
@@ -427,7 +426,6 @@ export const translations = {
     faq6Answer3: "and stablecoins.",
 
     // NewsPage
-    news: "Crypto News",
     newsDescription: "Latest news updates about cryptocurrency markets, blockchain and DeFi",
     searchNews: "Search news...",
     readMore: "Read more",

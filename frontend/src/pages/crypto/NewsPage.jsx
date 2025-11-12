@@ -6,6 +6,9 @@ import { translations } from "../../utils/formatters/translations";
 import { Calendar, Clock, TrendingUp, TrendingDown, ExternalLink, Search, Filter } from "lucide-react";
 
 const NewsPage = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  
   const { language } = useSelector((state) => state.settings);
   const t = translations[language];
 
@@ -137,7 +140,12 @@ const NewsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <Header />
+      <Header 
+        isLoginOpen={isLoginOpen}
+        onLoginOpenChange={setIsLoginOpen}
+        isRegisterOpen={isRegisterOpen}
+        onRegisterOpenChange={setIsRegisterOpen}
+      />
       <main className="container mx-auto px-4 py-6 space-y-8">
         {/* Page Header */}
         <div className="text-center py-8">
