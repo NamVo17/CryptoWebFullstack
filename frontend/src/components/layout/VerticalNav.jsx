@@ -140,7 +140,7 @@ export default function VerticalNav({
                   className="absolute  bottom-full mb-2 left-0 right-0  bg-white dark:bg-dark-100 rounded-lg shadow-lg border border-gray-200 dark:border-dark-300 py-2 z-50"
                 >
                   <button
-                    onClick={() => {
+                    onClick={() => { 
                       dispatch(toggleLanguage("vi"));
                       setIsLanguageMenuOpen(false);
                     }}
